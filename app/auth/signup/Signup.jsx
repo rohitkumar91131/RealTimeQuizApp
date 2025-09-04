@@ -2,24 +2,45 @@
 
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { toast, Toaster } from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Signup() {
-  const [formData, setFormData] = useState({
-    name: "",
-    username: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ name: "", username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { setIsLoginPageInWidow } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signup data:", formData);
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success(data.message);
+        setIsLoginPageInWidow(true);
+      } else {
+        toast.error(data.message || "Signup failed!");
+      }
+      
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,6 +61,7 @@ export default function Signup() {
             value={formData.name}
             onChange={handleChange}
             placeholder="Enter your full name"
+            required
             className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>
@@ -52,6 +74,7 @@ export default function Signup() {
             value={formData.username}
             onChange={handleChange}
             placeholder="Choose a username"
+            required
             className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>
@@ -65,6 +88,7 @@ export default function Signup() {
               value={formData.password}
               onChange={handleChange}
               placeholder="Create a password"
+              required
               className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 pr-10"
             />
             <button
@@ -79,9 +103,10 @@ export default function Signup() {
 
         <button
           type="submit"
-          className="w-full py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition"
+          disabled={loading}
+          className="w-full py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition disabled:opacity-50"
         >
-          Sign Up
+          {loading ? "Creating account..." : "Sign Up"}
         </button>
 
         <p className="text-sm text-center text-gray-600">

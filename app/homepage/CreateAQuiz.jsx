@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { ArrowLeft ,PlusCircle, User, Users, CheckCircle } from "lucide-react"
-import { toast } from "react-toastify"
+import { toast } from "react-hot-toast"
 
 function CreateAQuiz() {
   const [showQuizType, setShowQuizType] = useState(false)
@@ -14,9 +14,24 @@ function CreateAQuiz() {
     type : "",
     no_of_questions : 1,
   })
-
+  const [name , setName] = useState("Bro");
   useEffect(()=>{
-    toast("hi")
+    async function getMyName(){
+      try{
+        const res = await fetch(`http://localhost:4000/user/me`,{
+          method : "GET",
+          "credentials" : "include"
+        })
+        const data = await res.json();
+        console.log(data);
+        setName(data.user.name)
+      }
+      catch(err){
+        console.log(err.message)
+      }
+    }
+    getMyName()
+
   },[])
   const handleCreateQuiz = () => {
     setShowQuizType(true)
@@ -76,7 +91,7 @@ function CreateAQuiz() {
             onClick={handleReturnClick}
           />
         )}
-        Hey Rohit! Wanna Create a Quiz?
+        Hey {name && name}! Wanna Create a Quiz?
       </p>
 
       <button

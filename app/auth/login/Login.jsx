@@ -2,23 +2,46 @@
 
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { toast, Toaster } from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const { setIsLoginPageInWidow } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login data:", formData);
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+        "credentials" : "include"
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success(data.message);
+        setIsLoginPageInWidow(true);
+      } else {
+        toast.error(data.message || "Signup failed!");
+      }
+      
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,6 +62,7 @@ export default function Login() {
             value={formData.username}
             onChange={handleChange}
             placeholder="Enter your username"
+            required
             className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>
@@ -52,6 +76,7 @@ export default function Login() {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
+              required
               className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 pr-10"
             />
             <button
@@ -66,9 +91,10 @@ export default function Login() {
 
         <button
           type="submit"
-          className="w-full py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition"
+          disabled={loading}
+          className="w-full py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition disabled:opacity-50"
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <span className="text-sm text-center text-gray-600">
