@@ -26,7 +26,7 @@ export default function AllQuizzes() {
     });
 
     socket.on("quiz_error", (msg) => {
-      console.error(msg);
+      console.log(msg);
       setLoading(false);
     });
 

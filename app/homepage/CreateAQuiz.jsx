@@ -22,7 +22,7 @@ function CreateAQuiz() {
   useEffect(()=>{
     async function getMyName(){
       try{
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/me`,{
+        const res = await fetch(`http://localhost:4000/user/me`,{
           method : "GET",
           credentials : "include"
         })
@@ -110,7 +110,7 @@ function CreateAQuiz() {
   }
 
   return (
-    <div className="!mt-[10dvh] min-h-[50vh] max-h-[90dvh] !p-5 w-full flex items-center justify-center flex-col gap-4 transition-all duration-500">
+    <div className="!mt-[10dvh] h-fit !p-5 w-full flex items-center justify-center flex-col gap-4 transition-all duration-500">
       
       <p className="text-lg font-semibold text-gray-700 flex items-center gap-2">
         {showReturnButton && (

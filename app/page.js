@@ -22,8 +22,16 @@ function Page() { // <-- Capital P
 
   }, [socket]);
 
+  useEffect(()=>{
+    (async()=>{
+      let res = await fetch("http://localhost:4000");
+      let data = await res.json();
+      toast(data.msg)
+    })()
+  },[])
+
   return (
-    <div className=" grid grid-cols-1 sm:grid-cols-2  overflow-hidden ">
+    <div className=" grid grid-cols-1 sm:grid-cols-2  overflow-y-auto ">
        <CreateAQuiz/>
        <AllQuizzes/>
     </div>
