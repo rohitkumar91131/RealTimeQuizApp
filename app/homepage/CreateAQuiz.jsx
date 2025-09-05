@@ -22,7 +22,7 @@ function CreateAQuiz() {
   useEffect(()=>{
     async function getMyName(){
       try{
-        const res = await fetch(`http://localhost:4000/user/me`,{
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/me`,{
           method : "GET",
           credentials : "include"
         })
