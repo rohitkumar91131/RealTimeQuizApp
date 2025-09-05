@@ -19,7 +19,7 @@ export default function Header() {
     const pathName = usePathname();
     console.log(pathName)
     return (
-      <header className="fixed top-0 w-[100dvw] h-[50px] sm:h-[64px] flex items-center justify-between px-6 py-4 bg-white shadow">
+      <header className="fixed top-0 w-[100dvw] h-[10dvh] flex items-center justify-between px-6 py-4 bg-white shadow">
         <h1 className="text-2xl font-bold text-purple-600">QuizRush ⚡</h1>
         <nav className="space-x-6 hidden md:flex">
           {

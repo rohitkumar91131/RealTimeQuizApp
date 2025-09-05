@@ -3,6 +3,7 @@ import { useEffect } from "react"
 import CreateAQuiz from "./homepage/CreateAQuiz"
 import { useSocket } from "./context/SocketContext"
 import toast from "react-hot-toast";
+import AllQuizzes from "./homepage/ShowAllQuiz";
 
 function Page() { // <-- Capital P
   const { socket } = useSocket();
@@ -22,8 +23,9 @@ function Page() { // <-- Capital P
   }, [socket]);
 
   return (
-    <div className="!mt-[50px] sm:!mt-[64px] grid grid-cols-1 sm:grid-cols-2">
+    <div className=" grid grid-cols-1 sm:grid-cols-2  overflow-hidden ">
        <CreateAQuiz/>
+       <AllQuizzes/>
     </div>
   )
 }
