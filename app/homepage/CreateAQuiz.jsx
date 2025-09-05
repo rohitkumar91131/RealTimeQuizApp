@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { ArrowLeft ,PlusCircle, User, Users, CheckCircle } from "lucide-react"
 import { toast } from "react-hot-toast"
+import { useSocket } from "../context/SocketContext"
 
 function CreateAQuiz() {
   const [showQuizType, setShowQuizType] = useState(false)
@@ -15,6 +16,7 @@ function CreateAQuiz() {
     no_of_questions : 1,
   })
   const [name , setName] = useState("Bro");
+  const {socket} = useSocket();
   useEffect(()=>{
     async function getMyName(){
       try{
@@ -33,6 +35,23 @@ function CreateAQuiz() {
     getMyName()
 
   },[])
+  useEffect(() => {
+
+    socket.on("auth_error", (err) => {
+      toast.error(err);
+    });
+  
+    socket.on("connect_error", (err) => {
+      console.log("Connect error:", err.message);
+      toast.error(err.message);
+    });
+  
+    return () => {
+      socket.off("auth_error");
+      socket.off("connect_error");
+    }
+  }, [socket]);
+  
   const handleCreateQuiz = () => {
     setShowQuizType(true)
     setSHowReturbButton(true)
@@ -71,13 +90,20 @@ function CreateAQuiz() {
   const handleFormSubmit = (e) =>{
     e.preventDefault()
     if(!formData.no_of_questions){
-      toast("Enter no of question")
+      toast.error("Enter no of question")
       return
     }
     if(!formData.type){
-      toast("Write type")
+      toast.error("Write type")
       return
     }
+    if(!socket.connected){
+      toast.error("Socket not connected");
+      return
+    }
+    socket.emit("create_a_quiz", { type: formData.type, no_of_questions: formData.no_of_questions });
+
+
   }
 
   return (
@@ -139,7 +165,9 @@ function CreateAQuiz() {
             value={formData?.no_of_questions}
             onChange={(e)=> setFormData(prev=>( { ...prev , no_of_questions : e.target.value}))}
           />
-          <button className={`flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500 text-white font-medium hover:scale-105 transition-transform shadow-md `}>
+          <button className={`flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500 text-white font-medium hover:scale-105 transition-transform shadow-md `}
+              type="submit"
+          >
             <CheckCircle size={20} /> Create
           </button>
         </form>
